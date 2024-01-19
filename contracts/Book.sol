@@ -1,16 +1,19 @@
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.22;
 
-contract Book {
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+
+contract Book is Initializable {
     struct Order {
         uint256 price;
         uint256 amount;
     }
 
-    constructor(address base, address quote) {
-        
+    constructor() {
+        _disableInitializers();
     }
 
-    place() {
-        
-    }
+    function initialize() public initializer {}
+
+    function place() {}
 }
