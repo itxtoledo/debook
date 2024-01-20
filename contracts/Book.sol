@@ -5,9 +5,12 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract Book is Initializable {
     struct Order {
-        uint256 price;
-        uint256 amount;
+        uint id;
+        uint price;
+        uint amount;
     }
+
+    uint lastOrderId;
 
     constructor() {
         _disableInitializers();
@@ -15,5 +18,8 @@ contract Book is Initializable {
 
     function initialize() public initializer {}
 
-    function place() {}
+    function place(uint price, uint amount) {
+        uint newOrderId = lastOrderId + 1;
+        Order _order = Order(newOrderId, price, amount);
+    }
 }

@@ -10,6 +10,8 @@ contract Exchange {
     Wallet immutable wallet;
     Book immutable bookImplemmentation;
 
+   
+
     // quote -> base -> Book
     mapping(address => mapping(address => address)) books;
 
@@ -28,8 +30,10 @@ contract Exchange {
 
         if (books[quote][base] == address(0)) {
             address clone = Clones.clone(bookImplemmentation);
-
             Book(clone).initialize();
+            books[quote][base] = clone;
         }
+
+        books[quote][base].place();
     }
 }
