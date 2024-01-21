@@ -12,6 +12,9 @@ contract Book is Initializable {
 
     uint lastOrderId;
 
+    Order[] public asks;
+    Order[] public bids;
+
     constructor() {
         _disableInitializers();
     }
@@ -19,7 +22,13 @@ contract Book is Initializable {
     function initialize() public initializer {}
 
     function place(uint price, uint amount) {
-        uint newOrderId = lastOrderId + 1;
-        Order _order = Order(newOrderId, price, amount);
+        lastOrderId += 1;
+        Order _order = Order(lastOrderId, price, amount);
+    }
+
+// TODO
+    function cancel(uint id, uint isAsk) {
+        lastOrderId += 1;
+        Order _order = Order(lastOrderId, price, amount);
     }
 }

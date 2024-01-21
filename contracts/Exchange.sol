@@ -10,8 +10,6 @@ contract Exchange {
     Wallet immutable wallet;
     Book immutable bookImplemmentation;
 
-   
-
     // quote -> base -> Book
     mapping(address => mapping(address => address)) books;
 
@@ -24,7 +22,8 @@ contract Exchange {
         address base,
         address quote,
         uint price,
-        uint amount
+        uint amount,
+        uint isAsk,
     ) external {
         require(wallet.balanceOf(msg.sender, token) > amount);
 
@@ -35,5 +34,14 @@ contract Exchange {
         }
 
         books[quote][base].place();
+    }
+
+    function cancel(
+        address base,
+        address quote,
+        uint id,
+        uint isAsk,
+    ) external {
+        books[quote][base].cancel(id, isAsk);
     }
 }
