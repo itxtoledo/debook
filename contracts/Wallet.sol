@@ -2,6 +2,7 @@
 pragma solidity 0.8.22;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./Errors.sol";
 
 /**
  * @title Wallet Contract
@@ -64,7 +65,9 @@ contract Wallet {
      */
     function withdraw(address token, uint amount) external {
         // Check if the user has sufficient balance
-        require(balanceOf(msg.sender, token) >= amount, "Insufficient balance");
+        if (balances[msg.sender][token] < amount) {
+            revert Errors.InsufficientBalance();
+        }
 
         // Transfer tokens from the contract to the user
         IERC20(token).transfer(msg.sender, amount);

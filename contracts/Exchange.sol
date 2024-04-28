@@ -23,7 +23,7 @@ contract Exchange {
         address quote,
         uint price,
         uint amount,
-        uint isAsk,
+        uint8 isAsk,
     ) external {
         require(wallet.balanceOf(msg.sender, token) > amount);
 
@@ -33,14 +33,14 @@ contract Exchange {
             books[quote][base] = clone;
         }
 
-        books[quote][base].place();
+        books[quote][base].place(price, amount, isAsk);
     }
 
     function cancel(
         address base,
         address quote,
         uint id,
-        uint isAsk,
+        uint8 isAsk,
     ) external {
         books[quote][base].cancel(id, isAsk);
     }
