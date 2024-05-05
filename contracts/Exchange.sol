@@ -2,7 +2,7 @@
 pragma solidity 0.8.22;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
-
+import "Errors.sol";
 import "./Book.sol";
 import "./Wallet.sol";
 
@@ -18,6 +18,14 @@ contract Exchange {
         bookImplemmentation = bookImplemmentation_;
     }
 
+    function createBook(address base, address quote) external {
+        require(books[quote][base] == address(0), Errors.BookAlreadyExists());
+
+        address clone = Clones.clone(bookImplemplementation);
+        Book(clone).initialize();
+        books[quote][base] = clone;
+    }
+
     function place(
         address base,
         address quote,
@@ -25,13 +33,8 @@ contract Exchange {
         uint amount,
         uint8 isAsk,
     ) external {
-        require(wallet.balanceOf(msg.sender, token) > amount);
-
-        if (books[quote][base] == address(0)) {
-            address clone = Clones.clone(bookImplemmentation);
-            Book(clone).initialize();
-            books[quote][base] = clone;
-        }
+        require(books[quote][base] != address(0), Errors.BookNotFound());
+        require(wallet.balanceOf(msg.sender, token) > amount, Errors.InsufficientBalance());
 
         books[quote][base].place(price, amount, isAsk);
     }
