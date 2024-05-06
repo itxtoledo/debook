@@ -4,7 +4,7 @@ pragma solidity 0.8.22;
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract Book is Initializable {
-    event Execution(uint indexed id, uint price, uint amount, uint8 isAsk);
+    event Execution(uint indexed id, uint price, uint amount, bool isAsk);
 
     struct Transaction {
         bool isBase;
@@ -30,6 +30,12 @@ contract Book is Initializable {
 
     function initialize() public initializer {}
 
+    function computeChange(Order activeOrder, Order passiveOrder, uint amountTraded, bool isAsk) returns (uint change) {
+       if (!isAsk) {
+        change = ( activeOrder.price * amountTraded ) - ( passiveOrder.price * passiveOrder.remainingAmount );
+       }
+    }
+
     function place(uint price, uint amount, uint8 isAsk) returns (Transaction[] memory transactions) {
         lastOrderId += 1;
         Order activeOrder = Order(lastOrderId, price, amount, amount);
@@ -48,6 +54,13 @@ contract Book is Initializable {
                         passiveOrder.remainingAmount = 0;
                         activeOrder.remainingAmount -= amountTraded;
 
+                        uint change = computeChange(
+                                activeOrder,
+                                passiveOrder,
+                                amountTraded,
+                                isAsk
+                            );
+
                         // delete reflexiveSide[0];
                         // partial passive order execution
                     } else if (activeOrder.remainingAmount < passiveOrder.remainingAmount) {
@@ -55,10 +68,24 @@ contract Book is Initializable {
                          passiveOrder.remainingAmount -= amountTraded;
                          activeOrder.remainingAmount = 0;
 
+                          uint change = computeChange(
+                                activeOrder,
+                                passiveOrder,
+                                amountTraded,
+                                isAsk
+                            );
+
                         // delete activeOrder;
                     } else {
-                        // full active and passive order execution
+                        // filled both orders
                         uint amountTraded = passiveOrder.remainingAmount;
+
+                        uint change = computeChange(
+                                activeOrder,
+                                passiveOrder,
+                                amountTraded,
+                                isAsk
+                            );
                         
                         // delete activeOrder;
                         // delete reflexiveSide[0];
