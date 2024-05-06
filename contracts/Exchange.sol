@@ -31,10 +31,13 @@ contract Exchange {
         address quote,
         uint price,
         uint amount,
-        uint8 isAsk,
+        uint8 isAsk
     ) external {
         require(books[quote][base] != address(0), Errors.BookNotFound());
-        require(wallet.balanceOf(msg.sender, token) > amount, Errors.InsufficientBalance());
+        require(
+            wallet.balanceOf(msg.sender, token) > amount,
+            Errors.InsufficientBalance()
+        );
 
         books[quote][base].place(price, amount, isAsk);
     }
@@ -43,7 +46,7 @@ contract Exchange {
         address base,
         address quote,
         uint id,
-        uint8 isAsk,
+        uint8 isAsk
     ) external {
         books[quote][base].cancel(id, isAsk);
     }
